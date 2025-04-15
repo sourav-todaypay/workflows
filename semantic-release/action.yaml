@@ -1,0 +1,44 @@
+name: "Semantic Release"
+description: "analyse commits and create an appropriate semver compliant release"
+
+outputs:
+  version:
+    description: "released version / tag"
+    value: ${{ steps.release.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        show-progress: false
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: latest
+
+    - name: Install semantic-release extra plugins
+      shell: bash
+      run: yarn add @semantic-release/changelog gist:e23a15b465f42f1c8d6b2100d9321af8 gist:d3caac77b14a51a81dc7772df9fb6285 -D
+
+    - name: Ensure semantic-release config
+      shell: bash
+      run: |
+        if [ ! -f .releaserc ]; then
+          if [ -f ./.github/.releaserc ]; then
+            cp ./.github/.releaserc .
+          else
+            cp ${{ github.action_path }}/.releaserc .
+          fi
+        fi
+
+    - name: Create Release
+      id: release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      shell: bash
+      run: |
+        npx semantic-release
+        if test -f version.txt; then
+          echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
+        fi
