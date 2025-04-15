@@ -1,0 +1,40 @@
+{
+  "branches": [
+    "main",
+    {
+      "name": "ci",
+      "prerelease": true
+    }
+  ],
+  "plugins": [
+    [
+      "@abcde/semantic-versioning-plugin",
+      {
+        "versionFile": "version.txt"
+      }
+    ],
+    [
+      "@abcde/semantic-release-webhooks",
+      {
+        "notifyOnSuccess": true,
+        "notifyOnFailure": false,
+        "webhooks": [
+          "https://script.google.com/macros/s/AKfycbyFkGECzAAHfGH9NNr2Q8QOmCojSzR5Xv1hVCeItw0oe0wwuvjxMUQDsBsXNR4w0HPg-g/exec"
+        ]
+      }
+    ],
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "message": "chore(release): ${nextRelease.version} [skip ci]"
+      }
+    ]
+  ]
+}
